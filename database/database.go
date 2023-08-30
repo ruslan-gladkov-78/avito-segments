@@ -165,25 +165,3 @@ func (api API) GetSegments(id int) ([]string, error) {
 	}
 	return slugs, nil
 }
-
-/*func CreateDB(ctx context.Context, dsn string) (API, error) {
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if errPing := db.PingContext(ctx); errPing != nil {
-		log.Fatal(errPing)
-	}
-	_, err = db.ExecContext(
-		ctx,
-		"CREATE TABLE Segments (ID SERIAL PRIMARY KEY, Slug VARCHAR(255));",
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = db.ExecContext(
-		ctx,
-		"CREATE TABLE Users (ID INT, SegmentsIDs INT[])",
-	)
-	return API{db}, err
-}*/
