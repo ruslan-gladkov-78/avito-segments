@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	*handler.Api = database.API{DB: db}
+	handler.Api = &database.API{DB: db}
 	r := chi.NewRouter()
 	r.Post("/create_segment", handler.CreateHandler)
 	r.Post("/delete_segment", handler.DeleteHandler)
