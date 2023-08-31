@@ -57,7 +57,16 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("invalid request"))
 		return
 	}
-	err = (*Api).ChangeSegments(changeRequest.ToAdd.Slugs, changeRequest.ToDelete.Slugs, changeRequest.User.ID)
+	if changeRequest.TTL < 0 {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte("TTL must not be negative"))
+		return
+	}
+	err = (*Api).ChangeSegments(
+		changeRequest.ToAdd.Slugs,
+		changeRequest.ToDelete.Slugs,
+		changeRequest.User.ID,
+		changeRequest.TTL)
 	if err != nil {
 		w.WriteHeader(400)
 		_, _ = w.Write([]byte(err.Error()))

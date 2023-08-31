@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/lib/pq"
+	"time"
 )
 
 type API struct {
@@ -75,7 +76,7 @@ func (api API) DeleteSegment(slug string) error {
 	return err
 }
 
-func (api API) ChangeSegments(toAdd []string, toDelete []string, id int) error {
+func (api API) ChangeSegments(toAdd []string, toDelete []string, id int, TTL int) error {
 	var userExists bool
 	err := api.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM Users WHERE user_id=$1)",
 		id).Scan(&userExists)
@@ -95,6 +96,12 @@ func (api API) ChangeSegments(toAdd []string, toDelete []string, id int) error {
 			"INSERT INTO Users VALUES($1, $2)",
 			id, toAddIDs,
 		)
+		if TTL != 0 {
+			go func() {
+				time.Sleep(time.Duration(TTL) * time.Second)
+				api.ChangeSegments([]string{}, toAdd, id, 0)
+			}()
+		}
 		return err
 	} else {
 		toDeleteIDs := make([]int, len(toDelete))
@@ -132,6 +139,12 @@ func (api API) ChangeSegments(toAdd []string, toDelete []string, id int) error {
 			"UPDATE Users SET segments_ids=$1 WHERE user_id=$2",
 			newSegmentsIDsSlice, id,
 		)
+		if TTL != 0 {
+			go func() {
+				time.Sleep(time.Duration(TTL) * time.Second)
+				api.ChangeSegments([]string{}, toAdd, id, 0)
+			}()
+		}
 		return err
 	}
 }

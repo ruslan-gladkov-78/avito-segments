@@ -16,4 +16,5 @@ type ChangeRequest struct {
 	User     User     `json:"user"`
 	ToAdd    Segments `json:"to_add"`
 	ToDelete Segments `json:"to_delete"`
+	TTL      int
 }
